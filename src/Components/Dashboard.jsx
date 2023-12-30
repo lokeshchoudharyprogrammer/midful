@@ -27,7 +27,7 @@ export const Dashboard = () => {
     }
 
     const [Data, SetData] = useState([])
-    const URL = "https://jungle-green-pig-tie.cyclic.app/tasks"
+    const URL = `https://jungle-green-pig-tie.cyclic.app/tasks?sort=${sort}&searchBy=${searchBy}&searchTerm=${searchTerm}`
 
     useEffect(() => {
 
@@ -42,6 +42,7 @@ export const Dashboard = () => {
                 return res.json()
             }).then((res) => {
                 SetData(res)
+                console.log(res)
                 setLoading(false);
 
             })

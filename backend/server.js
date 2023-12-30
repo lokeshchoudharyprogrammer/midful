@@ -36,14 +36,14 @@ const Task = mongoose.model('Task', taskSchema);
 app.get("/", (req, res) => {
     res.send("<h1>Welcome to 2024</h1>")
 })
-app.get('/tasks', async (req, res) => {
-    try {
-        const tasks = await Task.find();
-        res.json(tasks);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// app.get('/tasks', async (req, res) => {
+//     try {
+//         const tasks = await Task.find();
+//         res.json(tasks);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
 // Get a specific task
 app.get('/tasks/:id', async (req, res) => {
@@ -110,50 +110,50 @@ app.delete('/tasks/:id', async (req, res) => {
 let filterOptions = {
     sort: 'lastInserted', // Default sorting
     searchBy: 'name', // Default search by
-  };
+};
 app.get('/tasks', async (req, res) => {
     try {
-      // Fetch user preferences from the in-memory array
-      const { sort, searchBy, searchTerm } = filterOptions;
-  
-      let query = {};
-  
-      if (searchTerm) {
-        // If search term is provided, filter by name, mobile, or email
-        query[searchBy] = { $regex: searchTerm, $options: 'i' };
-      }
-  
-      const tasks = await Task.find(query).sort(getSortOption(sort));
-      res.json(tasks);
+        // Fetch user preferences from the in-memory array
+        const { sort, searchBy, searchTerm } = filterOptions;
+
+        let query = {};
+
+        if (searchTerm) {
+            // If search term is provided, filter by name, mobile, or email
+            query[searchBy] = { $regex: searchTerm, $options: 'i' };
+        }
+
+        const tasks = await Task.find(query).sort(getSortOption(sort));
+        res.json(tasks);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
+});
 
 app.post('/filter', (req, res) => {
     const { sort, searchBy } = req.body;
-  
+
     // Update the in-memory array with the new filter options
     filterOptions = { sort, searchBy };
-  
+
     res.json({ message: 'Filter options updated successfully' });
-  });
-  
-  // Helper function to get the sorting option
-  function getSortOption(sort) {
+});
+
+// Helper function to get the sorting option
+function getSortOption(sort) {
     switch (sort) {
-      case 'A-Z':
-        return { title: 1 };
-      case 'Z-A':
-        return { title: -1 };
-      case 'lastModified':
-        return { updatedAt: -1 };
-      case 'lastInserted':
-      default:
-        return { createdAt: -1 };
+        case 'A-Z':
+            return { title: 1 };
+        case 'Z-A':
+            return { title: -1 };
+        case 'lastModified':
+            return { updatedAt: -1 };
+        case 'lastInserted':
+        default:
+            return { createdAt: -1 };
     }
-  }
-  
+}
+
 
 
 // Start the server
