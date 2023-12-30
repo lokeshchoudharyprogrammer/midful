@@ -7,7 +7,7 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Button, useDisclosure, Input, Box, useToast
+    Button, useDisclosure, Input, Box, useToast, Divider, VStack, Select
 } from '@chakra-ui/react'
 import { Link } from "react-router-dom"
 import { CheckIcon, CloseIcon, AddIcon, EmailIcon, PhoneIcon, AtSignIcon, ExternalLinkIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons'
@@ -18,51 +18,42 @@ export const Dashboard = () => {
     const [userName, setuserName] = useState()
     const [mobile, setmobile] = useState()
     const [email, setemail] = useState()
+    const [loading, setLoading] = useState(true);
+    const [sort, setSort] = useState('lastInserted');
+    const [searchBy, setSearchBy] = useState('name');
+    const [searchTerm, setSearchTerm] = useState('');
     const user = {
         userName, mobile, email
     }
-    const dummyData = [
-        {
-            userName: 'JohnDoe',
-            mobile: '123-456-7890',
-            email: 'john.doe@example.com',
-        },
-        {
-            userName: 'JaneSmith',
-            mobile: '987-654-3210',
-            email: 'jane.smith@example.com',
-        },
-        {
-            userName: 'BobJohnson',
-            mobile: '555-123-4567',
-            email: 'bob.johnson@example.com',
-        },
-        {
-            userName: 'AliceWilliams',
-            mobile: '333-555-7777',
-            email: 'alice.williams@example.com',
-        },
-        {
-            userName: 'ChrisAnderson',
-            mobile: '888-444-2222',
-            email: 'chris.anderson@example.com',
-        },
-
-    ];
 
     const [Data, SetData] = useState([])
-    const URL = "http://localhost:3100/tasks"
+    const URL = "https://jungle-green-pig-tie.cyclic.app/tasks"
 
     useEffect(() => {
 
-        fetch(URL).then((res) => {
-            return res.json()
-        }).then((res) => {
-            SetData(res)
 
-        })
+        Fetch()
 
-    }, [])
+    }, [sort, searchBy, searchTerm])
+    const Fetch = () => {
+        try {
+            setLoading(true);
+            fetch(URL).then((res) => {
+                return res.json()
+            }).then((res) => {
+                SetData(res)
+                setLoading(false);
+
+            })
+        } catch (error) {
+            setLoading(false);
+        }
+
+    }
+    const updateFilter = () => {
+        // Update filter options and trigger a fetch
+        Fetch();
+    };
     const handleDeletebtn = (id) => {
 
         const deleteMethod = {
@@ -85,23 +76,36 @@ export const Dashboard = () => {
             })
 
             )
-            .catch(error => console.log(error)) // logs the error to the console
+            .catch(error => console.log(error))
+
+        // logs the error to the console
 
 
     }
     const handleAdduser = () => {
 
-        fetch("http://localhost:3100/tasks", {
+        fetch("https://jungle-green-pig-tie.cyclic.app/tasks", {
             method: "POST",
             body: JSON.stringify(user),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
-        }).then((res)=>{
-           return res.json()
-        }).then((res)=>{
-            console.log(res)
+        }).then((res) => {
+            return res.json()
+        }).then((res) => {
+            toast({
+                title: `New User Added`,
+                status: 'success',
+                isClosable: true,
+                position: "top-right",
+                duration: 1000,
+            })
+
         })
+    }
+
+    if (loading) {
+        return <p>Loading...</p>
     }
 
     return (
@@ -133,16 +137,40 @@ export const Dashboard = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-            {Data.length === 0 ? <NotFound /> :
 
-                <Box style={{ margin: "auto", marginTop: "84px", display: "flex", flexWrap: "wrap", gap: "20px", width: "95%", justifyContent: "center" }}>
+            <VStack spacing={4} align="stretch" p={4}>
+                <Select value={sort} onChange={(e) => setSort(e.target.value)}>
+                    <option value="lastInserted">Last Inserted</option>
+                    <option value="A-Z">A-Z</option>
+                    <option value="Z-A">Z-A</option>
+                    <option value="lastModified">Last Modified</option>
+                </Select>
+
+                <Select value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
+                    <option value="name">Name</option>
+                    <option value="mobile">Mobile</option>
+                    <option value="email">Email</option>
+                </Select>
+
+                <Input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+
+                <Button colorScheme="teal" onClick={updateFilter}>
+                    Apply Filter
+                </Button>
+
+
+
+
+            </VStack>
+            {
+                Data && <Box style={{ margin: "auto", marginTop: "84px", display: "flex", flexWrap: "wrap", gap: "20px", width: "95%", justifyContent: "center" }}>
                     {
-                        Data.map((user) => {
+                        Data && Data.map((user) => {
                             const { userName, mobile, email, _id } = user
 
                             return (
                                 <>
-                                    <div key={userName} style={{ boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px", padding: "12px", borderRadius: "9px", width: "300px" }}>
+                                    <div key={_id} style={{ boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px", padding: "12px", borderRadius: "9px", width: "300px" }}>
                                         <p><AtSignIcon boxSize={5} pr={"7px"} />{userName}</p>
                                         <p><PhoneIcon boxSize={5} pr={"7px"} />{mobile}</p>
                                         <p><EmailIcon boxSize={5} pr={"7px"} /> {email}</p>

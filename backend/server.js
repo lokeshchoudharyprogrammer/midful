@@ -108,6 +108,33 @@ app.delete('/tasks/:id', async (req, res) => {
     }
 });
 
+
+app.post('/filter', (req, res) => {
+    const { sort, searchBy } = req.body;
+  
+    // Update the in-memory array with the new filter options
+    filterOptions = { sort, searchBy };
+  
+    res.json({ message: 'Filter options updated successfully' });
+  });
+  
+  // Helper function to get the sorting option
+  function getSortOption(sort) {
+    switch (sort) {
+      case 'A-Z':
+        return { title: 1 };
+      case 'Z-A':
+        return { title: -1 };
+      case 'lastModified':
+        return { updatedAt: -1 };
+      case 'lastInserted':
+      default:
+        return { createdAt: -1 };
+    }
+  }
+  
+
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

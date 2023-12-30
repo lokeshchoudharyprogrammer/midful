@@ -11,7 +11,7 @@ export const DetailsPage = () => {
 
     useEffect(() => {
 
-        fetch(`http://localhost:3100/tasks/${UserId}`).then((res) => {
+        fetch(`https://jungle-green-pig-tie.cyclic.app/tasks/${UserId}`).then((res) => {
             return res.json()
         }).then((res) => {
             SetData(res)
@@ -29,7 +29,7 @@ export const DetailsPage = () => {
         }
 
         console.log(id)
-        fetch(URL + `/${id}`, deleteMethod)
+        fetch(`https://jungle-green-pig-tie.cyclic.app/task/${id}`, deleteMethod)
             .then(response => response.json()) // parses JSON response into an object
             .then(data => toast({
                 title: `${data.message}`,
