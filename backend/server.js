@@ -107,6 +107,7 @@ app.delete('/tasks/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 app.get('/tasks', async (req, res) => {
     try {
         // Fetch filter options from query parameters

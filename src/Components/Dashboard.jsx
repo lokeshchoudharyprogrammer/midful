@@ -21,14 +21,14 @@ export const Dashboard = () => {
     const [email, setemail] = useState()
     const [loading, setLoading] = useState(true);
     const [sort, setSort] = useState('lastInserted');
-    const [searchBy, setSearchBy] = useState('name');
+    const [searchBy, setSearchBy] = useState('userName');
     const [searchTerm, setSearchTerm] = useState('');
     const user = {
         userName, mobile, email
     }
 
     const [Data, SetData] = useState([])
-    const URL = `https://jungle-green-pig-tie.cyclic.app/tasks?sort=${sort}&searchBy=${searchBy}&searchTerm=${searchTerm}`
+    const URL = 'https://jungle-green-pig-tie.cyclic.app/tasks/'
 
     useEffect(() => {
 
@@ -165,7 +165,7 @@ export const Dashboard = () => {
                 </Select>
 
                 <Select value={searchBy} onChange={(e) => setSearchBy(e.target.value)}>
-                    <option value="name">Name</option>
+                    <option value="userName">userName</option>
                     <option value="mobile">Mobile</option>
                     <option value="email">Email</option>
                 </Select>
