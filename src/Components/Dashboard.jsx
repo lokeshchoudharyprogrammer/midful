@@ -15,6 +15,12 @@ import { NotFound } from './NotFound'
 export const Dashboard = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
+    const [userName, setuserName] = useState()
+    const [mobile, setmobile] = useState()
+    const [email, setemail] = useState()
+    const user = {
+        userName, mobile, email
+    }
     const dummyData = [
         {
             userName: 'JohnDoe',
@@ -53,7 +59,7 @@ export const Dashboard = () => {
             return res.json()
         }).then((res) => {
             SetData(res)
-            
+
         })
 
     }, [])
@@ -77,13 +83,26 @@ export const Dashboard = () => {
                 position: "top-right",
                 duration: 1000,
             })
-                
+
             )
             .catch(error => console.log(error)) // logs the error to the console
 
 
     }
+    const handleAdduser = () => {
 
+        fetch("http://localhost:3100/tasks", {
+            method: "POST",
+            body: JSON.stringify(user),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        }).then((res)=>{
+           return res.json()
+        }).then((res)=>{
+            console.log(res)
+        })
+    }
 
     return (
         <>
@@ -96,18 +115,18 @@ export const Dashboard = () => {
                     <ModalCloseButton />
                     <ModalBody pb={3}>
                         {/* Add User Name, Mobile and Email address – Save & Cancel Button */}
-                        <Input placeholder='Name' type="name" />
+                        <Input placeholder='Name' onChange={(e) => setuserName(e.target.value)} type="name" />
                         <br />
                         <br />
-                        <Input placeholder='Email' type="email" />
+                        <Input placeholder='Email' onChange={(e) => setemail(e.target.value)} type="email" />
                         <br />
                         <br />
-                        <Input placeholder='Phone Number' type="number" />
+                        <Input placeholder='Phone Number' onChange={(e) => setmobile(e.target.value)} type="number" />
 
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='teal' variant='outline' mr={"9px"}><CheckIcon boxSize={5} pr={"7px"} /> Save</Button>
+                        <Button onClick={handleAdduser} colorScheme='teal' variant='outline' mr={"9px"}><CheckIcon boxSize={5} pr={"7px"} /> Save</Button>
                         <Button colorScheme='red' mr={3} onClick={onClose} >
                             <CloseIcon boxSize={5} pr={"7px"} />   Close
                         </Button>
