@@ -18,7 +18,32 @@ export const DetailsPage = () => {
         })
 
     }, [])
+    const handleDeletebtn = (id) => {
 
+        const deleteMethod = {
+            method: 'DELETE', // Method itself
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8' // Indicates the content 
+            },
+
+        }
+
+        console.log(id)
+        fetch(URL + `/${id}`, deleteMethod)
+            .then(response => response.json()) // parses JSON response into an object
+            .then(data => toast({
+                title: `${data.message}`,
+                status: 'error',
+                isClosable: true,
+                position: "top-right",
+                duration: 1000,
+            })
+
+            )
+            .catch(error => console.log(error)) // logs the error to the console
+
+
+    }
 
     return (
         <div style={{
@@ -40,15 +65,10 @@ export const DetailsPage = () => {
                 }}>
                     <p style={{ display: "flex", gap: "12px" }}>
                         <EditIcon />
-                        <DeleteIcon onClick={() =>
-                            toast({
-                                title: `Delete Successfully`,
-                                status: 'error',
-                                isClosable: true,
-                                position: "top-right",
-                                duration: 1000,
-                            })
-                        } />
+                        <DeleteIcon onClick={() => {
+
+                            handleDeletebtn(Data?._id)
+                        }} />
                     </p>
 
                 </div>
