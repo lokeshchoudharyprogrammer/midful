@@ -107,14 +107,10 @@ app.delete('/tasks/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-let filterOptions = {
-    sort: 'lastInserted', // Default sorting
-    searchBy: 'name', // Default search by
-};
 app.get('/tasks', async (req, res) => {
     try {
-        // Fetch user preferences from the in-memory array
-        const { sort, searchBy, searchTerm } = filterOptions;
+        // Fetch filter options from query parameters
+        const { sort, searchBy, searchTerm } = req.query;
 
         let query = {};
 
@@ -126,15 +122,17 @@ app.get('/tasks', async (req, res) => {
         const tasks = await Task.find(query).sort(getSortOption(sort));
         res.json(tasks);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching tasks:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
+// Update filter options
 app.post('/filter', (req, res) => {
     const { sort, searchBy } = req.body;
 
-    // Update the in-memory array with the new filter options
-    filterOptions = { sort, searchBy };
+    // Log filter options for debugging
+    console.log('Received filter options:', { sort, searchBy });
 
     res.json({ message: 'Filter options updated successfully' });
 });
@@ -153,7 +151,6 @@ function getSortOption(sort) {
             return { createdAt: -1 };
     }
 }
-
 
 
 // Start the server

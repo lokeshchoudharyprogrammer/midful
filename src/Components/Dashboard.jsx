@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom"
 import { CheckIcon, CloseIcon, AddIcon, EmailIcon, PhoneIcon, AtSignIcon, ExternalLinkIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons'
 import { NotFound } from './NotFound'
+import axios from 'axios'
 export const Dashboard = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
@@ -35,7 +36,23 @@ export const Dashboard = () => {
         Fetch()
 
     }, [sort, searchBy, searchTerm])
-    const Fetch = () => {
+
+    const Fetch = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`https://jungle-green-pig-tie.cyclic.app/tasks`, {
+                params: { sort, searchBy, searchTerm },
+            });
+            SetData(response.data);
+            console.log(response)
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+            setLoading(false);
+        }
+    };
+
+    const Fetchs = () => {
         try {
             setLoading(true);
             fetch(URL).then((res) => {
