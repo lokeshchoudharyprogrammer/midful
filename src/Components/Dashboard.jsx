@@ -37,7 +37,7 @@ export const Dashboard = () => {
 
 
 
-    const URL = 'http://localhost:3100/tasks'
+    const URL = 'https://jungle-green-pig-tie.cyclic.app'
 
 
     const [Data, SetData] = useState([])
@@ -52,7 +52,7 @@ export const Dashboard = () => {
     const Fetch = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:3100/tasks`, {
+            const response = await axios.get(`https://jungle-green-pig-tie.cyclic.app`, {
                 params: { sort, searchBy, searchTerm, userId },
             });
             SetData(response.data);
@@ -100,7 +100,7 @@ export const Dashboard = () => {
     const handleAdduser = () => {
         console.log(user)
 
-        fetch("http://localhost:3100/tasks", {
+        fetch("https://jungle-green-pig-tie.cyclic.app", {
             method: "POST",
             body: JSON.stringify(user),
             headers: {
@@ -138,7 +138,7 @@ export const Dashboard = () => {
 
     const updateData = async (updatedUserData) => {
         console.log(updatedUserData)
-        const url = `http://localhost:3100/tasks/${updatedUserData._id}`;
+        const url = `https://jungle-green-pig-tie.cyclic.app/tasks/${updatedUserData._id}`;
 
         try {
             const response = await fetch(url, {
@@ -188,7 +188,7 @@ export const Dashboard = () => {
             }),
 
                 Fetch(),
-                window.location.reload()
+                window.location.reload(),
             )
             .catch(error => console.log(error))
 
