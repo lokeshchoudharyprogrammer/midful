@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.boxStyle {
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    padding: 12px;
+    border-radius: 9px;
+    width: 300px;
+}
+
+.flexContainer {
+    display: flex;
+    margin-top: 12px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.flexContainerBox {
+    display: flex;
+    gap: 12px;
+}

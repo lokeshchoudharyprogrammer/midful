@@ -1,0 +1,36 @@
+.AddUserbtn {
+    float: right;
+    margin-top: 23px;
+    margin-right: 23px;
+    font-family: monospace;
+}
+
+.container {
+    margin: auto;
+    margin-top: 84px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 95%;
+    justify-content: center;
+}
+
+.boxStyle {
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    padding: 12px;
+    border-radius: 9px;
+    width: 300px;
+}
+
+.flexContainer {
+    display: flex;
+    margin-top: 12px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.flexContainerBox {
+    display: flex;
+    gap: 12px;
+}

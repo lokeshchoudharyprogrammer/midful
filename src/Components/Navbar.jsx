@@ -8,6 +8,10 @@ import { HamburgerIcon, ChevronDownIcon } from '@chakra-ui/icons'
 
 import { Link } from 'react-router-dom';
 export const Navbar = () => {
+    const handleclick = () => {
+        localStorage.clear();
+        window.location.reload()
+    }
     return (
         <>
             <Box bg="#2dd463" p={3} style={{
@@ -53,7 +57,7 @@ export const Navbar = () => {
                                 style={{ fontSize: "26px" }}
                             />
                             <MenuList>
-                               
+
                                 <MenuItem>
                                     <ButtonGroup gap='2'>
                                         <Link to='/sign-up'>
@@ -63,6 +67,11 @@ export const Navbar = () => {
 
                                             <Button onClick={() => window.alert("This Is Login ")} colorScheme='black' style={{ background: "#2dd463", border: "none", boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px" }}>Log in</Button>
                                         </Link>
+                                        <br />
+                                        <br />
+
+                                        <Button onClick={handleclick} colorScheme='black' style={{ background: "#2dd463", border: "none", boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px" }}>Log Out</Button>
+
                                     </ButtonGroup>
 
                                 </MenuItem>

@@ -1,4 +1,6 @@
+import { useToast } from '@chakra-ui/react';
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const myComponentStyle = {
     padding: '8px',
@@ -28,6 +30,46 @@ const myBoxStyle = {
 export const SignIn = () => {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
+    const toast = useToast()
+
+    const navigate = useNavigate();
+    const handleSubmit = () => {
+
+        fetch("http://localhost:3100/login", {
+            method: "POST",
+            body: JSON.stringify({
+                email, password
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                console.log(json?.user);
+                if (json?.user) {
+                    console.log(json?.user, "Yes user");
+                    localStorage.setItem("userId", json?.user._id)
+                    localStorage.setItem("userid", JSON.stringify(json))
+                }
+                toast({
+                    title: `${json?.message}`,
+                    status: 'success',
+                    isClosable: true,
+                    position: "top-right",
+                    duration: 1000,
+                });
+                if (json?.token) {
+
+                    navigate('/dashboard')
+                    window.location.reload();
+                }
+
+
+            }
+            );
+    }
     return (
         <>
             <div style={{
@@ -47,7 +89,7 @@ export const SignIn = () => {
                     <input
                         style={myComponentStyle}
                         id='email'
-                        type="text"
+                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         pattern="[A-Za-z0-9]+"
@@ -61,7 +103,7 @@ export const SignIn = () => {
                         style={myComponentStyle}
 
                         placeholder='Password'
-                        type="text"
+                        type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         pattern="[A-Za-z0-9]+"
@@ -70,7 +112,7 @@ export const SignIn = () => {
                     />
 
 
-                    <button style={myBoxStyle} >Submit</button>
+                    <button onClick={handleSubmit} style={myBoxStyle} >Submit</button>
                 </div >
             </div >
         </>

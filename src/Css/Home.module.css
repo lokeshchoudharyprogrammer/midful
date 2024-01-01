@@ -1,0 +1,53 @@
+.backgroundContainer {
+    background: #2dd463;
+    height: 98vh;
+    margin-top:-12px;
+}
+
+/* page.module.css */
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.columnContainer {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+/* page.module.css */
+
+.textStyles {
+    color: white;
+    font-size: 24px;
+    font-family: monospace;
+}
+
+/* page.module.css */
+
+.buttonStyles {
+    padding: 11px 32px 14px 35px;
+    border-radius: 6px;
+    border: none;
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.2), 0px 4px 6px -2px rgba(0, 0, 0, 0.1);
+    font-family: monospace;
+    background: black;
+    color: white;
+    font-size: larger;
+}
+
+/* page.module.css */
+
+.centerText {
+    text-align: center;
+    color: white;
+    font-family: monospace;
+    font-size: medium;
+}

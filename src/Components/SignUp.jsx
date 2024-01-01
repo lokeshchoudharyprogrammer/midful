@@ -1,4 +1,6 @@
+import { useToast } from '@chakra-ui/react';
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 const myComponentStyle = {
@@ -15,7 +17,7 @@ const myComponentStyle = {
 const myFlexContainerStyle = {
     display: 'flex',
     flexDirection: 'row',
-    gap: '7px',
+    gap: '0px',
     marginTop: '15px',
     fontFamily: 'monospace',
     fontWeight: '700',
@@ -33,19 +35,19 @@ const myBoxStyle = {
     fontFamily: '"JetBrains Mono", monospace',
     boxSizing: 'border-box',
     color: '#536DFE',
-    // Additional boxShadow, you might want to merge the two or choose one
-    // depending on your design requirements
     boxShadow: 'rgba(83, 109, 254, 0.2) 0 2px 4px, rgba(83, 109, 254, 0.15) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset',
 };
 export const SignUp = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setpassword] = useState('');
     const [phone, setPhone] = useState('');
     const [gender, setGender] = useState(''); // Assuming the initial state for gender is empty
     const [hearAbout, setHearAbout] = useState([]);
     const [city, setCity] = useState('Mumbai'); // Assuming Mumbai as the default city
     const [selectedState, setSelectedState] = useState(null); // Updated state for the selected state
-
+    const toast = useToast()
+    const navigate = useNavigate();
     const stateOptions = [
         { value: 'Gujarat', label: 'Gujarat' },
         { value: 'Maharashtra', label: 'Maharashtra' },
@@ -56,11 +58,8 @@ export const SignUp = () => {
         { value: 'Ahmedabad', label: 'Ahmedabad' },
         { value: 'Pune', label: 'Pune' },
     ];
-    const handleSave = () => {
-        // Validate and send data to API
-        // You can add your API call logic here
+    const handleSave = async () => {
 
-        // For simplicity, we are just logging the data to the console
         console.log({
             name,
             email,
@@ -68,17 +67,64 @@ export const SignUp = () => {
             gender,
             hearAbout,
             city,
-            state: selectedState ? selectedState.value : '', // Retrieve the selected state value
+            state: selectedState ? selectedState.value : ''
         });
 
+        let formData = {
+            name,
+            email,
+            password,
+            phone,
+            gender,
+            hearAbout,
+            city: city ? city.value : '',
+            state: selectedState ? selectedState.value : '',
+        };
+        try {
+            const response = await fetch('http://localhost:3100/register', {
+                method: 'POST',
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+
+            const data = await response.json();
+            
+
+            toast({
+                title: `${data?.message}`,
+                status: 'success',
+                isClosable: true,
+                position: "top-right",
+                duration: 1000,
+            });
+
+            setTimeout(() => {
+
+                if (data?.message) {
+
+                    navigate('/login')
+                }
+            }, 3000);
+
+        } catch (error) {
+            console.error(error);
+        }
         // Clear form fields after saving
         setName('');
         setEmail('');
+        setpassword('')
         setPhone('');
         setGender('');
         setHearAbout([]);
         setCity('Mumbai');
         setSelectedState(null); // Reset the selected state
+
 
     };
 
@@ -87,7 +133,7 @@ export const SignUp = () => {
             // background: 'rgb(238, 242, 255)',
             margin: '0px',
             paddingTop: '10px',
-          
+
         }}>
             <h1 style={{
                 fontFamily: 'monospace',
@@ -95,7 +141,7 @@ export const SignUp = () => {
                 marginTop: '0px',
                 fontSize: 'xx-large',
             }}>Signup</h1>
-            <div style={{ display: "flex", borderStyle: 'dotted', justifyContent: "center", flexDirection: "column", width: "320px", margin: "auto", marginTop: "23px", gap: "5px", boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", padding: "22px", borderRadius: "12px" }}>
+            <div style={{ display: "flex", borderStyle: 'dotted', justifyContent: "center", flexDirection: "column", width: "345px", margin: "auto", marginTop: "23px", gap: "5px", boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px", padding: "22px", borderRadius: "12px" }}>
                 <input
                     style={myComponentStyle}
                     id="name"
@@ -121,6 +167,17 @@ export const SignUp = () => {
                     required
                     placeholder='Email'
                 />
+                <input
+                    style={myComponentStyle}
+                    id='password'
+                    type="password"
+                    value={password}
+                    onChange={(e) => setpassword(e.target.value)}
+                    pattern="[A-Za-z0-9]+"
+                    title="Alphanumeric only"
+                    required
+                    placeholder='Password'
+                />
 
 
                 <input
@@ -144,7 +201,7 @@ export const SignUp = () => {
                         name="gender"
                         value="Male" id="Gender"
                         checked={gender === 'Male'}
-                        onChange={() => setGender('Male')}
+                        onChange={() => setGender('Male')} required
                     />
 
 
@@ -157,7 +214,7 @@ export const SignUp = () => {
                         name="gender"
                         value="Female"
                         checked={gender === 'Female'}
-                        onChange={() => setGender('Female')}
+                        onChange={() => setGender('Female')} required
                     />
                     <label for="Gender">  Others
                     </label>
@@ -166,7 +223,7 @@ export const SignUp = () => {
                         name="gender"
                         value="Others" id="Gender"
                         checked={gender === 'Others'}
-                        onChange={() => setGender('Others')}
+                        onChange={() => setGender('Others')} required
                     />
 
                 </div>
@@ -184,7 +241,7 @@ export const SignUp = () => {
 
                         LinkedIn
                     </label>
-                    <input
+                    <input required
                         id="LinkedIn"
                         type="checkbox"
                         value="LinkedIn"
@@ -199,7 +256,7 @@ export const SignUp = () => {
                         type="checkbox"
                         value="Friends"
                         checked={hearAbout.includes('Friends')}
-                        onChange={() => setHearAbout((prev) => toggleCheckbox('Friends', prev))}
+                        onChange={() => setHearAbout((prev) => toggleCheckbox('Friends', prev))} required
                     />
 
                     <label for="JobPortal">Job Portal
@@ -209,7 +266,7 @@ export const SignUp = () => {
                         type="checkbox"
                         value="Job Portal"
                         checked={hearAbout.includes('Job Portal')}
-                        onChange={() => setHearAbout((prev) => toggleCheckbox('Job Portal', prev))}
+                        onChange={() => setHearAbout((prev) => toggleCheckbox('Job Portal', prev))} required
                     />
 
                     <label for="Others"> Others
@@ -219,7 +276,7 @@ export const SignUp = () => {
                         type="checkbox"
                         value="Others"
                         checked={hearAbout.includes('Others')}
-                        onChange={() => setHearAbout((prev) => toggleCheckbox('Others', prev))}
+                        onChange={() => setHearAbout((prev) => toggleCheckbox('Others', prev))} required
                     />
 
                 </div>
@@ -237,8 +294,9 @@ export const SignUp = () => {
                     id="city"
                     options={cityOptions}
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(value) => setCity(value)}
                     placeholder="Select city..."
+                    required
 
                 >
 
@@ -258,6 +316,7 @@ export const SignUp = () => {
                     value={selectedState}
                     onChange={(value) => setSelectedState(value)}
                     placeholder="Select state..."
+                    required
                 />
 
                 <button style={myBoxStyle} onClick={handleSave}>Submit</button>

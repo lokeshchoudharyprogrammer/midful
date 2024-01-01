@@ -13,6 +13,8 @@ import { Link } from "react-router-dom"
 import { CheckIcon, CloseIcon, AddIcon, EmailIcon, PhoneIcon, AtSignIcon, ExternalLinkIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons'
 import { NotFound } from './NotFound'
 import axios from 'axios'
+import Style from "../Css/Dashboard.module.css"
+
 export const Dashboard = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
@@ -23,12 +25,22 @@ export const Dashboard = () => {
     const [sort, setSort] = useState('lastInserted');
     const [searchBy, setSearchBy] = useState('userName');
     const [searchTerm, setSearchTerm] = useState('');
+    const userId = localStorage.getItem("userId")
+    const taskModalDisclosure = useDisclosure();
+    const [editedTask, setEditedTask] = useState("");
+    const [tasks, setTasks] = useState(["Task 1", "Task 2", "Task 3"]);
+    const [editedTaskIndex, setEditedTaskIndex] = useState(null)
     const user = {
-        userName, mobile, email
+        userName, mobile, email, userId
     }
 
+
+
+
+    const URL = 'http://localhost:3100/tasks'
+
+
     const [Data, SetData] = useState([])
-    const URL = 'https://jungle-green-pig-tie.cyclic.app/tasks/'
 
     useEffect(() => {
 
@@ -40,11 +52,11 @@ export const Dashboard = () => {
     const Fetch = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`https://jungle-green-pig-tie.cyclic.app/tasks`, {
-                params: { sort, searchBy, searchTerm },
+            const response = await axios.get(`http://localhost:3100/tasks`, {
+                params: { sort, searchBy, searchTerm, userId },
             });
             SetData(response.data);
-            console.log(response)
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching tasks:', error);
@@ -52,57 +64,43 @@ export const Dashboard = () => {
         }
     };
 
-    const Fetchs = () => {
-        try {
-            setLoading(true);
-            fetch(URL).then((res) => {
-                return res.json()
-            }).then((res) => {
-                SetData(res)
-                console.log(res)
-                setLoading(false);
 
-            })
-        } catch (error) {
-            setLoading(false);
-        }
-
-    }
     const updateFilter = () => {
-        // Update filter options and trigger a fetch
+
         Fetch();
     };
     const handleDeletebtn = (id) => {
 
         const deleteMethod = {
-            method: 'DELETE', // Method itself
+            method: 'DELETE',
             headers: {
-                'Content-type': 'application/json; charset=UTF-8' // Indicates the content 
-            },
+                'Content-type': 'application/json; charset=UTF-8'
+            }
 
         }
 
-        console.log(id)
-        fetch(URL + `/${id}`, deleteMethod)
-            .then(response => response.json()) // parses JSON response into an object
+
+        fetch(URL + `${id}`, deleteMethod)
+            .then(response => response.json())
             .then(data => toast({
                 title: `${data.message}`,
                 status: 'error',
                 isClosable: true,
                 position: "top-right",
                 duration: 1000,
-            })
+            }),
 
+                Fetch()
             )
             .catch(error => console.log(error))
 
-        // logs the error to the console
 
 
     }
     const handleAdduser = () => {
+        console.log(user)
 
-        fetch("https://jungle-green-pig-tie.cyclic.app/tasks", {
+        fetch("http://localhost:3100/tasks", {
             method: "POST",
             body: JSON.stringify(user),
             headers: {
@@ -118,9 +116,84 @@ export const Dashboard = () => {
                 position: "top-right",
                 duration: 1000,
             })
+            Fetch()
 
         })
     }
+    const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onClose: onEditModalClose } = useDisclosure();
+    const [editedUser, setEditedUser] = useState({});
+
+
+    const handleEdit = (user) => {
+        setEditedUser(user);
+        onEditModalOpen();
+    };
+
+    const handleSaveChanges = () => {
+        // Add logic to save changes to the server
+        onEditModalClose();
+        console.log(editedUser)
+        updateData(editedUser, editedUser._d)
+    };
+
+    const updateData = async (updatedUserData) => {
+        console.log(updatedUserData)
+        const url = `http://localhost:3100/tasks/${updatedUserData._id}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH', // Use PATCH for update requests
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers if needed
+                },
+                body: JSON.stringify(updatedUserData), // Convert the data to JSON format
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Handle the response as needed
+            const responseData = await response.json();
+            if (responseData) {
+
+            }
+            window.location.reload()
+        } catch (error) {
+            console.error('Error during update:', error.message);
+            // Handle errors as needed
+        }
+    };
+
+    const handleDelete = (id) => {
+
+        const deleteMethod = {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8'
+            }
+
+        }
+
+
+        fetch(URL + `/${id}`, deleteMethod)
+            .then(response => response.json())
+            .then(data => toast({
+                title: `${data.message}`,
+                status: 'error',
+                isClosable: true,
+                position: "top-right",
+                duration: 1000,
+            }),
+
+                Fetch(),
+                window.location.reload()
+            )
+            .catch(error => console.log(error))
+
+
+    };
 
     if (loading) {
         return <p>Loading...</p>
@@ -128,7 +201,7 @@ export const Dashboard = () => {
 
     return (
         <>
-            <Button style={{ float: "right", marginTop: "23px", marginRight: "23px" }} fontFamily={"monospace"} onClick={onOpen}><AddIcon boxSize={5} pr={"7px"} />Add User </Button>
+            <Button className={Style.AddUserbtn} onClick={onOpen}><AddIcon boxSize={5} pr={"7px"} />Add User </Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
@@ -136,7 +209,7 @@ export const Dashboard = () => {
                     <ModalHeader fontFamily={"monospace"}>New User Details</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={3}>
-                        {/* Add User Name, Mobile and Email address – Save & Cancel Button */}
+
                         <Input placeholder='Name' onChange={(e) => setuserName(e.target.value)} type="name" />
                         <br />
                         <br />
@@ -170,7 +243,7 @@ export const Dashboard = () => {
                     <option value="email">Email</option>
                 </Select>
 
-                <Input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <Input type="text" value={searchTerm} placeholder={`Search By ${searchBy}`} onChange={(e) => setSearchTerm(e.target.value)} />
 
                 <Button colorScheme="teal" onClick={updateFilter}>
                     Apply Filter
@@ -180,48 +253,103 @@ export const Dashboard = () => {
 
 
             </VStack>
-            {
-                Data && <Box style={{ margin: "auto", marginTop: "84px", display: "flex", flexWrap: "wrap", gap: "20px", width: "95%", justifyContent: "center" }}>
-                    {
-                        Data && Data.map((user) => {
-                            const { userName, mobile, email, _id } = user
 
-                            return (
-                                <>
-                                    <div key={_id} style={{ boxShadow: "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px", padding: "12px", borderRadius: "9px", width: "300px" }}>
-                                        <p><AtSignIcon boxSize={5} pr={"7px"} />{userName}</p>
-                                        <p><PhoneIcon boxSize={5} pr={"7px"} />{mobile}</p>
-                                        <p><EmailIcon boxSize={5} pr={"7px"} /> {email}</p>
-                                        <div style={{
-                                            display: 'flex',
-                                            marginTop: '12px',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            textAlign: 'center',
-                                        }}>
-                                            <p style={{ display: "flex", gap: "12px" }}>
-                                                <EditIcon />
-                                                <DeleteIcon onClick={() => {
 
-                                                    handleDeletebtn(_id);
-                                                }} />
-                                            </p>
-                                            <Link to={`/userId/${_id}`}>
+            <Modal isOpen={taskModalDisclosure.isOpen} onClose={taskModalDisclosure.onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Edit Task</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        {/* Reusing the same input fields as in the User Data Modal */}
+                        <Input placeholder='Name' value={editedTask} onChange={(e) => setEditedTask(e.target.value)} type="name" />
+                        <br />
+                        <br />
+                        <Input placeholder='Email' value={editedTask} onChange={(e) => setEditedTask(e.target.value)} type="email" />
+                        <br />
+                        <br />
+                        <Input placeholder='Phone Number' value={editedTask} onChange={(e) => setEditedTask(e.target.value)} type="number" />
+                    </ModalBody>
 
-                                                <p style={{ fontFamily: "monospace" }}> View Details
-                                                    <ExternalLinkIcon boxSize={5} pl={"7px"} />
-                                                </p>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </>
-                            )
+                    <ModalFooter>
+                        <Button colorScheme="blue" onClick={handleSaveChanges}>
+                            Save Changes
+                        </Button>
+                        <Button colorScheme="gray" ml={3} onClick={taskModalDisclosure.onClose}>
+                            Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
-                        })
-                    }
+            {Data.length !== 0 ? (
+                <Box className={Style.container}>
+                    {Data.map((user) => {
+                        const { userName, mobile, email, _id } = user;
+
+                        return (
+                            <div key={_id} className={Style.boxStyle}>
+                                <p>
+                                    <AtSignIcon boxSize={5} pr={"7px"} />
+                                    {userName}
+                                </p>
+                                <p>
+                                    <PhoneIcon boxSize={5} pr={"7px"} />
+                                    {mobile}
+                                </p>
+                                <p>
+                                    <EmailIcon boxSize={5} pr={"7px"} /> {email}
+                                </p>
+                                <div className={Style.flexContainer}>
+                                    <p className={Style.flexContainerBox}>
+                                        <EditIcon onClick={() => handleEdit(user)} />
+                                        <DeleteIcon onClick={() => handleDelete(user._id)} />
+                                    </p>
+                                    <Link to={`/userId/${_id}`}>
+                                        <p style={{ fontFamily: "monospace" }}>
+                                            View Details <ExternalLinkIcon boxSize={5} pl={"7px"} />
+                                        </p>
+                                    </Link>
+                                </div>
+                            </div>
+                        );
+                    })}
+                    <Modal isOpen={isEditModalOpen} onClose={onEditModalClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalHeader>Edit User</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <Input
+                                    placeholder="Edit User Name"
+                                    value={editedUser.userName}
+                                    onChange={(e) => setEditedUser({ ...editedUser, userName: e.target.value })}
+                                />
+                                <Input
+                                    placeholder="Edit Mobile"
+                                    value={editedUser.mobile}
+                                    onChange={(e) => setEditedUser({ ...editedUser, mobile: e.target.value })}
+                                />
+                                <Input
+                                    placeholder="Edit Email"
+                                    value={editedUser.email}
+                                    onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+                                />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button colorScheme="blue" onClick={handleSaveChanges}>
+                                    Save Changes
+                                </Button>
+                                <Button colorScheme="gray" ml={3} onClick={onClose}>
+                                    Close
+                                </Button>
+                            </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                 </Box>
-
-            }
+            ) : (
+                <NotFound />
+            )}
         </>
     )
 }
